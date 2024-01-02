@@ -1,3 +1,6 @@
+import * as fs from "fs";
+import * as _ from "lodash";
+
 class ListaDeCosas {
   name: string;
   cosas: any[] = [];
@@ -24,6 +27,32 @@ class Product {
   }
 }
 
-class ListaDeProductos extends ListaDeCosas {}
+class ListaDeProductos extends ListaDeCosas {
+  constructor(nombre: string) {
+    super(nombre);
+    const jsonProducts = JSON.parse(
+      fs.readFileSync(__dirname + "/products.json").toString()
+    );
+    jsonProducts.forEach((p) => {
+      this.addProduct(p);
+    });
+  }
+
+  addProduct(product: Product): void {
+    this.add(product);
+  }
+
+  getProduct(id: number): Product {
+    return this.getCosas().find((p) => p.id == id);
+  }
+
+  removeProduct(id: number) {
+    _.remove(this.getCosas(), (c) => c.id == id);
+  }
+
+  getSortedByPrice(order: "asc" | "desc") {
+    return _.orderBy(this.getCosas(), "price", order);
+  }
+}
 
 export { ListaDeProductos, Product };
